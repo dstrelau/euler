@@ -6,3 +6,13 @@
       :else (recur (conj p i) (+ i 2)))))
 
 (println (prime 10001))
+
+; OR
+
+(defn prime? [n, primes]
+  (not-any? #(zero? (mod n %)) primes))
+
+(def primes
+  (lazy-cat [2 3] (filter #(prime? % primes) (take-nth 2 (iterate inc 5)))))
+
+(println (nth primes 10000))

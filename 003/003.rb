@@ -1,7 +1,7 @@
 def prime_factors(n)
   factors = []
   f = 2
-  while n > 1
+  while n > 1 && f < n
     if n % f == 0
       n /= f
       factors << f

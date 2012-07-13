@@ -1,14 +1,15 @@
 def prime_factors(n)
-  factors = []
+  factors = Hash.new(0)
   f = 2
-  while n > 1 && f < n
+  while n > 1
     if n % f == 0
       n /= f
-      factors << f
+      factors[f] += 1
+    else
+      f += 1
     end
-    f += 1
   end
-  factors
+  factors.keys
 end
 
 # golf'd
@@ -18,5 +19,5 @@ def max_prime_factor(n)
   f
 end
 
-# p prime_factors(600851475143)
+p prime_factors(600851475143).max
 p max_prime_factor(600851475143)

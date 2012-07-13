@@ -9,10 +9,14 @@
 
 ; OR
 
-(defn prime? [n, primes]
-  (not-any? #(zero? (mod n %)) primes))
+(declare primes)
+
+(defn prime? [n]
+  (let [factors (take-while #(<= % (Math/sqrt n)) primes)]
+    (not-any? #(zero? (mod n %)) factors)))
 
 (def primes
-  (lazy-cat [2 3] (filter #(prime? % primes) (take-nth 2 (iterate inc 5)))))
+  (lazy-cat [2]
+    (filter prime? (take-nth 2 (iterate inc 3)))))
 
 (println (nth primes 10000))

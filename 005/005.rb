@@ -14,3 +14,18 @@ def smallest_divisible_under(n)
 end
 
 puts smallest_divisible_under(20)
+
+# or just compute the LCM
+
+def gcd(a,b)
+  if b == 0
+  then a
+  else gcd(b, a % b)
+  end
+end
+
+def lcm(a,b)
+  (a*b) / gcd(a,b)
+end
+
+puts (1..20).inject(1) {|acc,n| lcm(acc,n) }

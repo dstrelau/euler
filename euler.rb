@@ -143,6 +143,7 @@ solution(4) do
       max = [max,n].max if n.to_s == n.to_s.reverse
     }
   }
+  max
 end
 
 ### PROBLEM 005 ###

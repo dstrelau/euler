@@ -1,3 +1,5 @@
+(require '(clojure [string :as s]))
+
 (defmacro euler [n body] `(defmethod solution ~n [n#] (delay ~body)))
 (defmulti solution (fn [n] n))
 (defmethod solution :default [n] (delay "UNSOLVED"))
@@ -27,7 +29,7 @@
       :else (recur n (inc f) factors))))
 
 (defn palindrome? [n]
-  (= (str n) (clojure.string/reverse (str n))))
+  (= (str n) (s/reverse (str n))))
 
 (defn gcd [a b] (loop [a a b b] (if (zero? b) a (recur b (mod a b)))))
 (defn lcm [a b] (/ (* a b) (gcd a b)))
@@ -54,6 +56,28 @@
 (def primes
   (lazy-cat [2]
     (filter prime? (take-nth 2 (iterate inc 3)))))
+
+(defn readlines [filename] (s/split-lines (slurp filename)))
+
+; partition then reduce over the partitions
+(defn part-reduce [size reduce-fn nums]
+  (let [parts (partition size 1 nums)]
+    (map #(reduce reduce-fn %) parts)))
+
+(defn transpose [m]
+  (apply vector (apply map vector m)))
+
+(defn diagonals [m]
+  (let [n (count m)
+        at (fn [i j] (get (get m i) j))]
+    (for [diag (range (dec (* 2 n)))
+          :let [startrow (max 0 (inc (- diag n)))]]
+      (for [col (range startrow (inc (- diag startrow)))
+            :let [row (- diag col)]]
+        (at row col)))))
+
+(defn diagonalsr [m]
+  (-> m reverse vec diagonals))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -86,7 +110,7 @@
 (euler 8
   (let [n (map #(Integer. (str %))
                (.replaceAll (slurp "data/008") "[\r\n]+" ""))]
-    (reduce max (map #(reduce * %) (partition 5 1 n)))))
+    (reduce max (part-reduce 5 * n))))
 
 ; 009: Find the product abc for the pythagorean triple where a + b + c = 1000.
 (euler 9 (first
@@ -99,6 +123,17 @@
 
 ; 010: Find the sum of all the primes below two million.
 (euler 10 (reduce + (take-while #(< % 2000000) primes)))
+
+; 011: Find the largest product of four adjacent numbers in a grid
+(euler 11
+  (let [toi #(Integer. %)
+      break #(s/split % #"\s+")
+      data (readlines "data/011")
+      grid (mapv #(mapv toi (break %)) data)
+      maxr #(reduce max (flatten %))
+      adjmax (fn [m] (maxr (remove empty? (map #(part-reduce 4 * %) m))))]
+    (reduce max (map adjmax
+      [grid (transpose grid) (diagonals grid) (diagonalsr grid)]))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (let [args (seq *command-line-args*)]

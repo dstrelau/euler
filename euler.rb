@@ -45,18 +45,6 @@ def max_prime_factor(n)
   f
 end
 
-def nth_prime(n)
-  primes = [2]
-  i = 3
-  while primes.length < n
-    unless primes.any? {|p| break if p > Math.sqrt(i) ; i % p == 0 }
-      primes << i
-    end
-    i += 2
-  end
-  primes[-1]
-end
-
 Primes = Enumerator.new do |yielder|
   yielder << 2
   primes = [2]
@@ -168,7 +156,7 @@ solution(6) { square_of_sum(100) - sum_of_squares(100) }
 
 ### PROBLEM 007 ###
 # What is the 10001st prime number?
-solution(7) { nth_prime(10_001) }
+solution(7) { Primes.take(10_001).last }
 
 ### PROBLEM 008 ###
 # Find the greatest product of five consecutive digits in the 1000-digit number.

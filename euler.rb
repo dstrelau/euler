@@ -161,7 +161,7 @@ solution(7) { Primes.take(10_001).last }
 ### PROBLEM 008 ###
 # Find the greatest product of five consecutive digits in the 1000-digit number.
 solution(8) {
-  number = File.readlines('008_number.txt').join
+  number = File.readlines('data/008').join
   number.each_char.each_cons(5).inject(0) {|max,arr|
     [max, arr.map(&:to_i).inject(&:*)].max
   }

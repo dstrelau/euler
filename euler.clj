@@ -79,6 +79,17 @@
 (defn diagonalsr [m]
   (-> m reverse vec diagonals))
 
+(defn find-first [f coll] (first (filter f coll)))
+
+(def triangle-numbers
+  (map #(reduce + (range 1 %)) (iterate inc 1)))
+
+(defn divisors [n]
+  (distinct (flatten (for [f1 (range 1 (inc (Math/sqrt n)))
+        :let [f2 (int (/ n f1))]
+        :when (zero? (mod n f1))]
+    [f1 f2]))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; 001: Find the sum of all the multiples of 3 or 5 below 1000.
@@ -134,6 +145,18 @@
       adjmax (fn [m] (maxr (remove empty? (map #(part-reduce 4 * %) m))))]
     (reduce max (map adjmax
       [grid (transpose grid) (diagonals grid) (diagonalsr grid)]))))
+
+; 012: What is the first triangle number to have over 500 divisors?
+(euler 12
+  (find-first #(> (count (divisors %)) 500) triangle-numbers))
+
+; 013: What are the first ten digits of the sum of 100 50-digit numbers?
+(euler 13
+  (let [data (readlines "data/013")
+        nums (map read-string data)
+        sum (apply + nums)
+        take-ten #(apply str (take 10 %))]
+    (take-ten (str sum))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (let [args (seq *command-line-args*)]

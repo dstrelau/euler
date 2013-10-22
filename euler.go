@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"math/big"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -140,16 +142,16 @@ func numInWords(lookupTable map[int]string, n int) string {
 	return strings.Join(result, " ")
 }
 
-func readFileLines(filename string) []string {
+func readFile(filename string) string {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
-	return strings.Split(strings.Trim(string(data), "\n"), "\n")
+	return strings.Trim(string(data), "\n")
 }
 
 func readIntMatrix(filename string) [][]int {
-	lines := readFileLines(filename)
+	lines := strings.Split(readFile(filename), "\n")
 	matrix := make([][]int, len(lines))
 	for i := 0; i < len(lines); i++ {
 		line := strings.Split(lines[i], " ")
@@ -188,6 +190,28 @@ func daysIn(year int, month int) int {
 	default:
 		return 31
 	}
+}
+
+func sumSlice(s []int) int {
+	sum := 0
+	for _, n := range s {
+		sum += n
+	}
+	return sum
+}
+
+func divisors(n int) []int {
+	r := []int{1}
+	root := int(math.Sqrt(float64(n)))
+	for i := 2; i <= root; i++ {
+		if n%i == 0 {
+			r = append(r, i)
+			if i != n/i {
+				r = append(r, n/i)
+			}
+		}
+	}
+	return r
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -246,7 +270,6 @@ func defineSolutions() map[int]solution {
 	}
 
 	// 005: Find the smallest positive number evenly divisible by all of (1..20)
-
 	// 006: Find the difference of sum of squares and square of the sum of (1..100)
 	// 007: What is the 10001st prime number?
 	// 008: Find the greatest product of five consecutive digits in a 1000-digit number.
@@ -309,6 +332,47 @@ func defineSolutions() map[int]solution {
 			sum += o
 		}
 		return sum
+	}
+
+	// 021: Evaluate the sum of all the amicable numbers under 10000.
+	solutions[21] = func() int {
+		result := 0
+		toSum := make(map[int]struct{})
+		sumOfDivisors := make(map[int]int)
+		for i := 0; i <= 10000; i++ {
+			sumOfDivisors[i] = sumSlice(divisors(i))
+		}
+		for a := 0; a <= 10000; a++ {
+			b := sumOfDivisors[a]
+			if sumOfDivisors[b] == a && a != b {
+				toSum[a] = struct{}{}
+				toSum[b] = struct{}{}
+			}
+		}
+		for n, _ := range toSum {
+			result += n
+		}
+		return result
+	}
+
+  // 022: Compute the sum of character-position scores for a word list
+	solutions[22] = func() int {
+		a := int('A')
+		names := strings.Split(readFile("data/022"), ",")
+		for i, n := range names {
+			names[i] = strings.Trim(n, "\"")
+		}
+		sort.Strings(names)
+
+		result := 0
+		for i, n := range names {
+			score := 0
+			for _, c := range n {
+				score += int(c) - a + 1
+			}
+			result += score * (i + 1)
+		}
+		return result
 	}
 
 	return solutions

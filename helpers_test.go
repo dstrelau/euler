@@ -72,3 +72,17 @@ func TestTakeUntil(t *testing.T) {
 func TestSum(t *testing.T) {
 	assert.Equal(t, 15, sumIntC(intGen(5)))
 }
+
+func TestPrimesUpto(t *testing.T) {
+	assert.Equal(t, []int{}, primesUpto(1))
+	assert.Equal(t, []int{2}, primesUpto(2))
+	assert.Equal(t, []int{2, 3}, primesUpto(3))
+	assert.Equal(t, []int{2, 3, 5, 7}, primesUpto(10))
+	assert.Equal(t, []int{2, 3, 5, 7, 11, 13, 17, 19}, primesUpto(20))
+}
+
+func TestNPrimes(t *testing.T) {
+	assert.Equal(t, []int{2}, nPrimes(1))
+	assert.Equal(t, []int{2, 3, 5, 7, 11}, nPrimes(5))
+	assert.Equal(t, []int{2, 3, 5, 7, 11, 13}, nPrimes(6))
+}

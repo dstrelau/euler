@@ -25,18 +25,20 @@ func (s solutionSlice) Less(i, j int) bool { return s[i].Number < s[j].Number }
 func (s solutionSlice) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func main() {
-	var problems map[int]func() int
+	problems := make(map[int]func() int)
 
-	// if we got args, solve those problems only
-	for _, arg := range os.Args[1:] {
-		n, _ := strconv.Atoi(arg)
-		if solution, solved := solvers[n]; solved {
-			problems[n] = solution
+	if len(os.Args) > 1 {
+		// if we got args, solve those problems only
+		for _, arg := range os.Args[1:] {
+			n, _ := strconv.Atoi(arg)
+			if solution, solved := solvers[n]; solved {
+				problems[n] = solution
+			}
 		}
+	} else {
+		// if we didn't get args, solve everything
+		problems = solvers
 	}
-
-	// if we didn't get args, solve everything
-	problems = solvers
 
 	// work on all solvers in parallel
 	var solutions []solution
@@ -80,6 +82,7 @@ var solvers = map[int]func() int{
 		return sumIntC(evenBelow4M)
 	},
 
+	// 003: What is the largest prime factor of 600851475143?
 	3: func() int { return maxInt(primeFactors(600851475143)) },
 
 	// 004: Find the largest palindrome made from the product of two 3-digit numbers.
@@ -101,9 +104,19 @@ var solvers = map[int]func() int{
 	// 005: Find the smallest positive number evenly divisible by all of (1..20)
 	// 006: Find the difference of sum of squares and square of the sum of (1..100)
 	// 007: What is the 10001st prime number?
+	7: func() int {
+		primes := nPrimes(10001)
+		return primes[len(primes)-1]
+	},
 	// 008: Find the greatest product of five consecutive digits in a 1000-digit number.
 	// 009: Find the product abc for the pythagorean triple where a + b + c = 1000.
+
 	// 010: Find the sum of all the primes below two million.
+	10: func() int {
+		primes := primesUpto(2000000 - 1)
+		return sumSlice(primes)
+	},
+
 	// 011: Find the largest product of four adjacent numbers in a grid
 	// 012: What is the first triangle number to have over 500 divisors?
 	// 013: What are the first ten digits of the sum of 100 50-digit numbers?

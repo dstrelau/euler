@@ -35,14 +35,6 @@ func takeUntil(in <-chan int, done chan<- bool, f func(int) bool) <-chan int {
 	return out
 }
 
-func sumIntC(in <-chan int) int {
-	sum := 0
-	for n := range in {
-		sum += n
-	}
-	return sum
-}
-
 func filterInt(in <-chan int, f func(int) bool) <-chan int {
 	out := make(chan int)
 
@@ -85,6 +77,45 @@ func multiplesOfBelowLimit(multiples []int, limit int) int {
 		}
 	}
 	return sum
+}
+
+// sieve of Eratosthenes
+// false values represent primes
+func primesUpto(limit int) []int {
+	if limit < 2 {
+		return []int{}
+	}
+
+	a := make([]bool, limit+1)
+
+	for i := 2; float64(i) < math.Sqrt(float64(limit)); i++ {
+		if !a[i] {
+			for j := i * i; j <= limit; j += i {
+				a[j] = true
+			}
+		}
+	}
+
+	primes := []int{}
+	for i := 2; i < len(a); i++ {
+		if !a[i] {
+			primes = append(primes, i)
+		}
+	}
+
+	return primes
+}
+
+// Prime Number Theorem
+func nPrimes(n int) []int {
+	if n < 6 {
+		return primesUpto(11)[:n]
+	}
+
+	n64 := float64(n)
+	logN := math.Log(n64)
+	limit := n64*logN + n64*math.Log(logN)
+	return primesUpto(int(limit))[:n]
 }
 
 func primeFactors(n int) []int {
@@ -232,6 +263,14 @@ func daysIn(year int, month int) int {
 func sumSlice(s []int) int {
 	sum := 0
 	for _, n := range s {
+		sum += n
+	}
+	return sum
+}
+
+func sumIntC(in <-chan int) int {
+	sum := 0
+	for n := range in {
 		sum += n
 	}
 	return sum
